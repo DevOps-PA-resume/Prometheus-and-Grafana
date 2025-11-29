@@ -1,0 +1,14 @@
+[prometheus]
+164.92.164.107 ansible_user=root ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file="/Users/pierre-alexandredelgado/.ssh/id_ed25519_test_1"
+
+[node_exporter]
+164.92.164.107 ansible_user=root ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file="/Users/pierre-alexandredelgado/.ssh/id_ed25519_test_1"
+
+[nginx_exporter]
+164.92.164.107 ansible_user=root ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file="/Users/pierre-alexandredelgado/.ssh/id_ed25519_test_1"
+
+[alertmanager]
+164.92.164.107 ansible_user=root ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file="/Users/pierre-alexandredelgado/.ssh/id_ed25519_test_1"
+
+[grafana]
+164.92.164.107 ansible_user=root ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file="/Users/pierre-alexandredelgado/.ssh/id_ed25519_test_1"

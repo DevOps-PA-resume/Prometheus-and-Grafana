@@ -1,0 +1,62 @@
+- name: Creating nginx_exporter user group
+  group: name="{{ groupId }}"
+
+- name: Creating nginx_exporter user
+  user:
+    name: "{{ userId }}"
+    group: "{{ groupId }}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{ userId }} nologin User"
+    createhome: "no"
+    state: present
+
+- name: Install prometheus nginx exporter
+  unarchive:
+    # Check for the correct release URL format for the version you use
+    src: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ version }}/nginx-prometheus-exporter_{{ version }}_linux_amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: DEBUG - List files in unarchived directory
+  shell: ls -R /tmp/nginx-prometheus-exporter*
+  register: extracted_files
+  failed_when: false # Allow to continue even if listing fails
+  delegate_to: 164.92.164.107 # Ensure this runs on the target host
+  
+- name: DEBUG - Print extracted files
+  debug:
+    var: extracted_files.stdout_lines
+
+- name: Copy prometheus nginx exporter binary to bin
+  copy:
+    # Note the binary name inside the unarchived folder
+    src: "/tmp/nginx-prometheus-exporter"
+    dest: "/usr/local/bin/nginx-prometheus-exporter"
+    owner: "{{ userId }}"
+    group: "{{ groupId }}"
+    remote_src: yes
+    mode: 0755
+
+- name: Delete nginx exporter tmp folder
+  file:
+    path: '/tmp/nginx-prometheus-exporter'
+    state: absent
+
+- name: Copy systemd init file (uses init.service.j2)
+  template:
+    src: init.service.j2
+    dest: /etc/systemd/system/nginx_exporter.service
+
+- name: Start nginx_exporter service
+  service:
+    name: nginx_exporter
+    state: started
+    enabled: yes
+
+- name: Check if nginx exporter emits metrices
+  uri:
+    # Check against the new listen_port: 9113
+    url: http://127.0.0.1:{{ listen_port }}/metrics
+    method: GET
+    status_code: 200

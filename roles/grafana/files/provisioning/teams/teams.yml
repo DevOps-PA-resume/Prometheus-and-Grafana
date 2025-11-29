@@ -1,0 +1,11 @@
+apiVersion: 1
+
+teams:
+  - name: DevOps Team
+    email: devops@example.com
+    members:
+      - alice
+  - name: Viewers Team
+    email: viewers@example.com
+    members:
+      - bob

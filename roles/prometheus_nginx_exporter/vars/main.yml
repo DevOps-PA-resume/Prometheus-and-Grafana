@@ -1,0 +1,10 @@
+---
+# NGINX Exporter Variables
+serviceName: "nginx_exporter"
+userId: "nginx_exporter"
+groupId: "nginx_exporter"
+# IMPORTANT: Update this to the latest stable version from GitHub:
+version: 0.11.0 
+# Note the required --nginx.plus, --nginx.scrape-uri, and optional --web.listen-address flags
+exec_command: /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1/nginx_status -web.listen-address :9113
+listen_port: 9113

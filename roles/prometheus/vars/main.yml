@@ -1,0 +1,6 @@
+---
+serviceName: "prometheus"
+userId: "prometheus"
+groupId: "prometheus"
+exec_command: "/usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.conf --storage.tsdb.path=/data/prometheus --storage.tsdb.retention=2d" --web.external-url="http://164.92.164.107/prometheus/" --web.route-prefix="/"
+version: "2.3.2"

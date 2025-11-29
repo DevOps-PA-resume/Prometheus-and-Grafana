@@ -1,0 +1,15 @@
+apiVersion: 1
+
+users:
+  - name: alice
+    email: alice@example.com
+    login: alice
+    password: SuperSecretPassword1
+    org_role: Admin
+    is_grafana_admin: false
+    
+  - name: bob
+    email: bob@example.com
+    login: bob
+    password: MyPassword2
+    org_role: Viewer

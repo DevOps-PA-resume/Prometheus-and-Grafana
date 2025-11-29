@@ -1,0 +1,84 @@
+- name: Install grafana
+  apt:
+    deb: https://dl.grafana.com/oss/release/grafana_{{ version }}_amd64.deb
+    state: present
+
+- name: 📁 Ensure Grafana data directory exists and has correct ownership/permissions
+  ansible.builtin.file:
+    path: /var/lib/grafana
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+  become: true
+
+- name: "Grafana configuration file copy"
+  template:
+    src: "grafana.conf.j2"
+    dest: /etc/grafana/grafana.ini
+  notify: event_restart_grafana
+
+- name: "Grafana server started"
+  service:
+    name: grafana-server
+    enabled: true
+    state: started
+
+- name: 📁 Copy Node Exporter Dashboard JSON to remote server
+  copy:
+    src: node-exporter-dashboard.json
+    dest: /tmp/node-exporter-dashboard.json
+    owner: grafana
+    group: grafana
+    mode: '0644'
+
+- name: 🚀 Import Node Exporter Dashboard
+  community.grafana.grafana_dashboard:
+    grafana_url: 'http://localhost:3000'
+    grafana_password: '{{ grafana_admin_password }}'
+    path: /tmp/node-exporter-dashboard.json
+    state: present
+    overwrite: yes
+
+- name: 🗑️ Clean up temporary dashboard JSON file
+  file:
+    path: /tmp/node-exporter-dashboard.json
+    state: absent
+
+# - name: "Check if Grafana is accessible."
+#   uri:
+#     url: http://127.0.0.1:3000
+#     method: GET
+#     status_code: 200
+
+- name: Ensure Grafana provisioning directories exist
+  ansible.builtin.file:
+    path: "/etc/grafana/provisioning/{{ item }}"
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+  loop:
+    - users
+    - teams
+
+- name: Deploy Grafana User Provisioning YAML
+  ansible.builtin.copy:
+    src: provisioning/users/users.yml
+    dest: /etc/grafana/provisioning/users/users.yaml
+    owner: grafana
+    group: grafana
+    mode: '0644'
+
+- name: Deploy Grafana Team Provisioning YAML
+  ansible.builtin.copy:
+    src: provisioning/teams/teams.yml
+    dest: /etc/grafana/provisioning/teams/teams.yaml
+    owner: grafana
+    group: grafana
+    mode: '0644'
+    
+- name: Restart Grafana service to apply provisioning
+  ansible.builtin.systemd:
+    name: grafana-server
+    state: restarted
