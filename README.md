@@ -1,6 +1,6 @@
 # Prometheus-and-Grafana
 
-roadmap.sh/projects/monitoring
+https://roadmap.sh/projects/monitoring
 
 ## How to use
 
